@@ -181,14 +181,15 @@ Further Inputs:
             return _eqn 
         # evaluate expression to see if comparator needs to be flipped
         locals = kwds['locals'] if 'locals' in kwds else None
+        if verbose: print get_variables(eqn, vars)
         if locals is None: locals = {}
-        locals.update(dict((var,rand()) for var in get_variables(eqn, vars)))
+        locals.update(dict((var,1.0) for var in get_variables(eqn, vars)))
         if verbose: print locals
         locals_ = _locals.copy()
         locals_.update(locals) #XXX: allow this?
         # make sure '=' is '==' so works in eval
         _cmp = comparator(_eqn)
-        variants = [100000,-200000,100100,-200,110,-20,11,-2,1] #HACK
+        variants = [100000,200000,100100,200,110,20,11,2,1] #HACK
         #HACK: avoid (rand-M)**(1/N) where (rand-M) negative; sqrt(x) to x**.5
         before = eqn.replace(cmp, '==') if cmp == '=' else eqn
         after = _eqn.replace(_cmp, '==') if _cmp == '=' else _eqn
@@ -207,6 +208,8 @@ Further Inputs:
                     raise error
         else: #END HACK
             after, before = eval(after, locals_), eval(before, locals_)
+        if verbose: print "Before: ", before
+        if verbose: print "After: ", after
         if before == after:
             return _eqn
         # flip comparator, then return

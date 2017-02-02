@@ -172,8 +172,8 @@ Requirements
     - python, version >= 2.6, version < 3.0
     - numpy, version >= 1.0
     - sympy, version >= 0.6.7
-    - dill, version >= 0.2.5
-    - klepto, version >= 0.1.2
+    - dill, version >= 0.2.6
+    - klepto, version >= 0.1.3
 
 Optional requirements::
 
@@ -367,8 +367,8 @@ if sys.version_info[:2] < (2.6):
 else:
     numpy_version = '>=1.0'
     sympy_version = '>=0.6.7'#, <0.7.4'
-dill_version = '>=0.2.5'
-klepto_version = '>=0.1.2'
+dill_version = '>=0.2.6'
+klepto_version = '>=0.1.3'
 scipy_version = '>=0.6.0'
 matplotlib_version = '>=0.91'
 if has_setuptools:

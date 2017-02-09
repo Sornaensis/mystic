@@ -22,6 +22,8 @@ from numpy import ndarray, asarray
 from _symbolic import solve
 from mystic.tools import list_or_tuple_or_ndarray, flatten
 
+import sys
+
 # XXX: another function for the inverse... symbolic to matrix? (good for scipy)
 def linear_symbolic(A=None, b=None, G=None, h=None):
     """Convert linear equality and inequality constraints from matrices to a 
@@ -183,13 +185,13 @@ Further Inputs:
         locals = kwds['locals'] if 'locals' in kwds else None
         if verbose: print get_variables(eqn, vars)
         if locals is None: locals = {}
-        locals.update(dict((var,1.0) for var in get_variables(eqn, vars)))
+        locals.update(dict((var,1.0+rand()/10000) for var in get_variables(eqn, vars)))
         if verbose: print locals
         locals_ = _locals.copy()
         locals_.update(locals) #XXX: allow this?
         # make sure '=' is '==' so works in eval
         _cmp = comparator(_eqn)
-        variants = [100000,200000,100100,200,110,20,11,2,1] #HACK
+        variants = [100000,-200000,100100,-200,110,-20,11,-2,1] #HACK
         #HACK: avoid (rand-M)**(1/N) where (rand-M) negative; sqrt(x) to x**.5
         before = eqn.replace(cmp, '==') if cmp == '=' else eqn
         after = _eqn.replace(_cmp, '==') if _cmp == '=' else _eqn
@@ -199,6 +201,8 @@ Further Inputs:
             try:
                 after, before = eval(after, locals_), eval(before, locals_)
                 break
+            except OverflowError as error:
+                [locals_.update({k:v/100}) for k,v in locals_.items() if k in get_variables(_eqn, vars)]
             except ValueError as error:  #FIXME: python2.5
                 if error.message.startswith('negative number') and \
                    error.message.endswith('raised to a fractional power'):
@@ -210,6 +214,7 @@ Further Inputs:
             after, before = eval(after, locals_), eval(before, locals_)
         if verbose: print "Before: ", before
         if verbose: print "After: ", after
+        if verbose: print "Comparator: ", cmp
         if before == after:
             return _eqn
         # flip comparator, then return

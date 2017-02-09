@@ -329,6 +329,8 @@ Further Inputs:
     code += """from numpy import mean as average;""" # use np.mean not average
     code += """from numpy import var as variance;""" # look like mystic.math
     code += """from numpy import ptp as spread;"""   # look like mystic.math
+    code += """from sympy import log,exp;"""
+    code += """from mpmath import lambertw;"""
     code = compile(code, '<string>', 'exec')
     exec code in _locals
     _locals.update(locals) #XXX: allow this?

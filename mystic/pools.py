@@ -50,11 +50,11 @@ interactively-defined functions.
 """
 __all__ = ['SerialPool']
 
-from abstract_launcher import AbstractWorkerPool
+from .abstract_launcher import AbstractWorkerPool
 __get_nodes__ = AbstractWorkerPool._AbstractWorkerPool__get_nodes
 __set_nodes__ = AbstractWorkerPool._AbstractWorkerPool__set_nodes
-from itertools import imap as _imap
-from __builtin__ import map as _map, apply as _apply
+
+from builtins import map as _map, apply as _apply
 
 class SerialPool(AbstractWorkerPool):
     """

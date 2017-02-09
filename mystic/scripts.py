@@ -1,3 +1,4 @@
+import collections
 #!/usr/bin/env python
 #
 # Author: Mike McKerns (mmckerns @caltech and @uqfoundation)
@@ -59,7 +60,7 @@ def _get_instance(location, *args, **kwds):
 args and kwds will be passed to the constructor of the model class
     """
     package, target = location.rsplit('.',1)
-    exec "from %s import %s as model" % (package, target)
+    exec("from %s import %s as model" % (package, target))
     import inspect
     if inspect.isclass(model):
         model = model(*args, **kwds)
@@ -111,7 +112,7 @@ Returns tuple (x,y) with 'x,y' defined above.
     """
     import numpy
     option = option.split(',')
-    opt = dict(zip(['x','y','z'],option))
+    opt = dict(list(zip(['x','y','z'],option)))
     if len(option) > 2 or len(option) < 1:
         raise ValueError("invalid format string: '%s'" % ','.join(option))
     z = bool(grid)
@@ -369,7 +370,7 @@ Additional Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(model, (list,tuple)) and not logfile and not kwds:
         cmdargs = model # (above is used by script to parse command line)
-    elif isinstance(model, basestring) and not logfile and not kwds:
+    elif isinstance(model, str) and not logfile and not kwds:
         cmdargs = shlex.split(model)
     # 'everything else' is essentially the functional interface
     else:
@@ -390,7 +391,7 @@ Additional Inputs:
             verb = kwds.get('verb', False)
 
             # special case: bounds passed as list of slices
-            if not isinstance(bounds, (basestring, type(None))):
+            if not isinstance(bounds, (str, type(None))):
                 cmdargs = ''
                 for b in bounds:
                     if isinstance(b, slice):
@@ -400,15 +401,15 @@ Additional Inputs:
                 bounds = cmdargs[:-2]
                 cmdargs = ''
 
-            if callable(reduce): _reducer, reduce = reduce, None
+            if isinstance(reduce, collections.Callable): _reducer, reduce = reduce, None
 
         # special case: model passed as model instance
        #model.__doc__.split('using::')[1].split()[0].strip()
-        if callable(model): _model, model = model, "None"
+        if isinstance(model, collections.Callable): _model, model = model, "None"
 
         # handle logfile if given
         if logfile:
-            if isinstance(logfile, basestring):
+            if isinstance(logfile, str):
                 model += ' ' + logfile
             else: # special case of passing in monitor instance
                 instance = logfile
@@ -481,7 +482,7 @@ Additional Inputs:
 
 #   import sys
 #   if 'mystic_model_plotter.py' not in sys.argv:
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -596,7 +597,7 @@ Additional Inputs:
         raise RuntimeError('a model or a results file is required')
     if model:
         model = _model or _get_instance(model)
-        if verbose: print model.__doc__
+        if verbose: print(model.__doc__)
         # need a reducer if model returns an array
         if reducer: model = reduced(reducer, arraylike=False)(model)
 
@@ -717,7 +718,7 @@ Required Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(filename, (list,tuple)) and not kwds:
         cmdargs = filename # (above is used by script to parse command line)
-    elif isinstance(filename, basestring) and not kwds:
+    elif isinstance(filename, str) and not kwds:
         cmdargs = shlex.split(filename)
     # 'everything else' is essentially the functional interface
     else:
@@ -742,7 +743,7 @@ Required Inputs:
             cmdargs += '' if col is None else '--col="{}" '.format(col)
         else:
             cmdargs = ' ' + cmdargs
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             cmdargs = filename.split() + shlex.split(cmdargs)
         else: # special case of passing in monitor instance
             instance = filename
@@ -778,7 +779,7 @@ Required Inputs:
                       help="string to indicate collapse indices")
 #   import sys
 #   if 'mystic_collapse_plotter.py' not in sys.argv:
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -809,7 +810,7 @@ Required Inputs:
     try: # get logfile name
       filename = parsed_args[0]
     except:
-      raise IOError, "please provide log file name"
+      raise IOError("please provide log file name")
 
     try: # select which iteration to stop plotting at
       stop = int(parsed_opts.stop)
@@ -893,7 +894,7 @@ Required Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(filename, (list,tuple)) and not kwds:
         cmdargs = filename # (above is used by script to parse command line)
-    elif isinstance(filename, basestring) and not kwds:
+    elif isinstance(filename, str) and not kwds:
         cmdargs = shlex.split(filename)
     # 'everything else' is essentially the functional interface
     else:
@@ -918,7 +919,7 @@ Required Inputs:
             cmdargs += '' if param is None else '--param="{}" '.format(param)
         else:
             cmdargs = ' ' + cmdargs
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             cmdargs = filename.split() + shlex.split(cmdargs)
         else: # special case of passing in monitor instance
             instance = filename
@@ -957,7 +958,7 @@ Required Inputs:
 
 #   import sys
 #   if 'mystic_log_reader.py' not in sys.argv:
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -1054,7 +1055,7 @@ Required Inputs:
       id = [0 for i in step]
 
     # build the list of selected parameters
-    params = range(len(param[0]))
+    params = list(range(len(param[0])))
     selected = []
     for i in select:
       selected.extend(eval("params[%s]" % i))

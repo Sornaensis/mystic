@@ -72,7 +72,7 @@ from numpy import clip, squeeze
 
 abs = absolute
 
-from _scipy060optimize import brent #XXX: local copy to avoid dependency!
+from ._scipy060optimize import brent #XXX: local copy to avoid dependency!
 
 from mystic.abstract_solver import AbstractSolver
 
@@ -174,7 +174,7 @@ The size of the simplex is dim+1.
         # process and activate input settings
         settings = self._process_inputs(kwds)
         for key in settings:
-            exec "%s = settings['%s']" % (key,key)
+            exec("%s = settings['%s']" % (key,key))
 
         # HACK to enable not explicitly calling _decorate_objective
         cost = self._bootstrap_objective(cost, ExtraArgs)
@@ -191,7 +191,7 @@ The size of the simplex is dim+1.
             N = len(x0)
             rank = len(x0.shape)
             if not -1 < rank < 2:
-                raise ValueError, "Initial guess must be a scalar or rank-1 sequence."
+                raise ValueError("Initial guess must be a scalar or rank-1 sequence.")
             if rank == 0:
                 sim = numpy.zeros((N+1,), dtype=x0.dtype)
             else:
@@ -221,7 +221,7 @@ The size of the simplex is dim+1.
             sim = self.population
             fsim = self.popEnergy
             N = len(sim[0])
-            one2np1 = range(1,N+1)
+            one2np1 = list(range(1,N+1))
 
             # apply constraints  #XXX: is this the only appropriate place???
             sim[0] = asfarray(self._constraints(sim[0]))
@@ -298,7 +298,7 @@ The size of the simplex is dim+1.
         settings = super(NelderMeadSimplexSolver, self)._process_inputs(kwds)
         settings.update({\
         'radius':self.radius}) #percentage change for initial simplex values
-        [settings.update({i:j}) for (i,j) in kwds.items() if i in settings]
+        [settings.update({i:j}) for (i,j) in list(kwds.items()) if i in settings]
         self.radius = settings['radius']
         return settings
 
@@ -496,7 +496,7 @@ Takes one initial input:
         # process and activate input settings
         settings = self._process_inputs(kwds)
         for key in settings:
-            exec "%s = settings['%s']" % (key,key)
+            exec("%s = settings['%s']" % (key,key))
 
         # HACK to enable not explicitly calling _decorate_objective
         cost = self._bootstrap_objective(cost, ExtraArgs)
@@ -514,7 +514,7 @@ Takes one initial input:
             N = len(x) #XXX: this should be equal to self.nDim
             rank = len(x.shape)
             if not -1 < rank < 2:
-                raise ValueError, "Initial guess must be a scalar or rank-1 sequence."
+                raise ValueError("Initial guess must be a scalar or rank-1 sequence.")
 
             if direc is None:
                 direc = eye(N, dtype=float)
@@ -527,7 +527,7 @@ Takes one initial input:
                 self._AbstractSolver__save_state()
 
         elif not self.generations: # do generations = 1
-            ilist = range(len(x))
+            ilist = list(range(len(x)))
             x1 = x.copy()
             # do initial "second half" of solver step 
             fx = fval
@@ -577,7 +577,7 @@ Takes one initial input:
             fx = fval
             bigind = 0
             delta = 0.0
-            ilist = range(len(x))
+            ilist = list(range(len(x)))
             for i in ilist:
                 direc1 = direc[i]
                 fx2 = fval
@@ -623,7 +623,7 @@ Takes one initial input:
         settings.update({\
         'xtol':self.xtol})   #line-search error tolerance
         direc=self._direc    #initial direction set
-        [settings.update({i:j}) for (i,j) in kwds.items() if i in settings]
+        [settings.update({i:j}) for (i,j) in list(kwds.items()) if i in settings]
         self._direc = kwds['direc'] if 'direc' in kwds else direc
         self.xtol = settings['xtol']
         return settings

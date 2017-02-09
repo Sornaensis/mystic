@@ -113,10 +113,10 @@ Important class members:
         self._map_solver      = True
 
         # import 'map' defaults
-        from python_map import serial_launcher
-        from python_map import python_map
-        from python_map import worker_pool
-        from python_map import defaults
+        from .python_map import serial_launcher
+        from .python_map import python_map
+        from .python_map import worker_pool
+        from .python_map import defaults
 
         # default settings for parallel and distributed computing
         launcher        = serial_launcher   # launcher

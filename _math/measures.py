@@ -123,7 +123,7 @@ Inputs:
       yw = ((0.0,0.0),)
   else:
       yw = [(f(x),w) for (x,w) in zip(samples, weights) if abs(w) > tol]
-  return mean(*zip(*yw))
+  return mean(*list(zip(*yw)))
   ##XXX: at around len(samples) == 150, the following is faster
   #aw = asarray(weights)
   #ax = asarray(samples)
@@ -422,9 +422,9 @@ For example:
   else: #XXX: better to use a standard "xk' = constrain(xk)" interface ?
     def constraints(rv):
       coords = _pack( _nested(rv,npts) )
-      coords = zip(*coords)              # 'mimic' a nested list
+      coords = list(zip(*coords))              # 'mimic' a nested list
       coords = constrain(coords, [weights for i in range(len(coords))])
-      coords = zip(*coords)              # revert back to a packed list
+      coords = list(zip(*coords))              # revert back to a packed list
       return _flat( _unpack(coords,npts) )
 
   # construct cost function to reduce deviation from expectation value
@@ -452,7 +452,8 @@ For example:
   maxfun = kwds.pop('maxfun', 1e+6)
   crossover = 0.9; percent_change = 0.9
 
-  def optimize(cost,(lb,ub),tolerance,_constraints):
+  def optimize(cost, xxx_todo_changeme,tolerance,_constraints):
+    (lb,ub) = xxx_todo_changeme
     from mystic.solvers import DifferentialEvolutionSolver2
     from mystic.termination import VTR
     from mystic.strategy import Best1Exp
@@ -590,7 +591,7 @@ def impose_reweighted_mean(m, samples, weights=None, solver=None):
 
     #XXX: better to fail immediately if xlo < m < xhi... or the below?
     if warn or not almostEqual(_norm, norm):
-        print "Warning: could not impose mean through reweighting"
+        print("Warning: could not impose mean through reweighting")
         return None #impose_mean(m, samples, weights), weights
 
     return wts #samples, wts
@@ -637,7 +638,7 @@ def impose_reweighted_variance(v, samples, weights=None, solver=None):
 
     #XXX: better to fail immediately if xlo < m < xhi... or the below?
     if warn or not almostEqual(_norm, norm):
-        print "Warning: could not impose mean through reweighting"
+        print("Warning: could not impose mean through reweighting")
         return None #impose_variance(v, samples, weights), weights
 
     return wts #samples, wts  # "mean-preserving"
@@ -887,7 +888,7 @@ For example:
 
 Note: is 'mean-preserving' for samples and 'norm-preserving' for weights
 """
-    if index is None: index = range(len(weights))
+    if index is None: index = list(range(len(weights)))
     # allow negative indexing
     index = set(len(weights)+i if i<0 else i for i in index)
     m = mean(samples, weights)
@@ -949,10 +950,10 @@ Note: is 'mean-preserving' for samples and 'norm-preserving' for weights
     samples, weights = list(samples), list(weights) # don't edit inputs
     m = mean(samples, weights)
     # allow negative indexing
-    pairs = zip(*tuple(tuple(len(weights)+i if i<0 else i for i in j) for j in zip(*pairs)))
+    pairs = list(zip(*tuple(tuple(len(weights)+i if i<0 else i for i in j) for j in zip(*pairs))))
     #XXX: any vectorized way to do this?
     from mystic.tools import connected
-    for i,j in connected(pairs).iteritems():
+    for i,j in connected(pairs).items():
         v = weights[i]
         for k in j:
             v += weights[k]

@@ -62,7 +62,7 @@ Further Input: [***disabled***]
     queue -- string name of selected queue (e.g. 'normal')
 """
    #print "ignoring: %s" % kwds  #XXX: should allow use of **kwds
-    result = map(func, *arglist) #     see pathos.pyina.ez_map
+    result = list(map(func, *arglist)) #     see pathos.pyina.ez_map
     return result
 
 def worker_pool():
@@ -78,7 +78,7 @@ carddealer_mapper = worker_pool
 
 if __name__=='__main__':
     f = lambda x:x**2
-    print python_map(f,range(5),nodes=10)
+    print(python_map(f,list(range(5)),nodes=10))
 
     import subprocess
     d = {'progargs': """-c "print('hello')" """}

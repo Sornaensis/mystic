@@ -117,7 +117,7 @@ Other class members:
             try:
                 nodes = kwds['nodes']
                 msg = "got multiple values for keyword argument 'nodes'"
-                raise TypeError, msg
+                raise TypeError(msg)
             except KeyError:
                 nodes = args[0]
         else: nodes = kwds['nodes'] if 'nodes' in kwds else self.__nodes
@@ -136,7 +136,7 @@ Other class members:
         try:
             argz = [args[0]]
         except IndexError:
-            raise TypeError, "map() requires at least two args"
+            raise TypeError("map() requires at least two args")
         return
     def __imap(self, f, *args, **kwds):
         """default filter for imap inputs
@@ -150,7 +150,7 @@ Other class members:
         try:
             argz = [args[0]]
         except IndexError:
-            raise TypeError, "imap() must have at least two arguments"
+            raise TypeError("imap() must have at least two arguments")
         return
     def __pipe(self, f, *args, **kwds):  #FIXME: need to think about this...
         """default filter for pipe inputs
@@ -162,16 +162,16 @@ Other class members:
            #raise TypeError, "'%s' is an invalid keyword for this function" % kwds.keys()[0]
         # a valid number of arguments are required
         try:
-            vars = f.func_code.co_argcount
-            defs = len(f.func_defaults)
+            vars = f.__code__.co_argcount
+            defs = len(f.__defaults__)
             arglen = len(args)
             minlen = vars - defs
             if vars == minlen and arglen != vars: #XXX: argument vs arguments
-              raise TypeError, "%s() takes at exactly %s arguments (%s given)" % (f.__name__(), str(vars), str(arglen))
+              raise TypeError("%s() takes at exactly %s arguments (%s given)" % (f.__name__(), str(vars), str(arglen)))
             elif arglen > vars:
-              raise TypeError, "%s() takes at most %s arguments (%s given)" % (f.__name__(), str(vars), str(arglen))
+              raise TypeError("%s() takes at most %s arguments (%s given)" % (f.__name__(), str(vars), str(arglen)))
             elif arglen < (vars - defs):
-              raise TypeError, "%s() takes at least %s arguments (%s given)" % (f.__name__(), str(vars - defs), str(arglen))
+              raise TypeError("%s() takes at least %s arguments (%s given)" % (f.__name__(), str(vars - defs), str(arglen)))
         except:
             pass
         return
@@ -247,7 +247,7 @@ results object to check if the result is ready.
         return self.__nodes
     def __set_nodes(self, nodes):
         """set the number of nodes in the pool"""
-        raise TypeError, "nodes is a read-only attribute"
+        raise TypeError("nodes is a read-only attribute")
     # interface
     pass
 

@@ -10,8 +10,8 @@
 
 # get version numbers, license, and long description
 try:
-    from info import this_version as __version__
-    from info import readme as __doc__, license as __license__
+    from .info import this_version as __version__
+    from .info import readme as __doc__, license as __license__
 except ImportError:
     msg = """First run 'python setup.py build' to build mystic."""
     raise ImportError(msg)
@@ -29,39 +29,39 @@ __all__ = ['solvers', 'termination', 'strategy', 'munge', 'tools', \
            'support', 'model_plotter', 'log_reader', 'collapse_plotter']
 
 # solvers
-import solvers
+from . import solvers
 
 # strategies, termination conditions
-import termination
-import strategy
+from . import termination
+from . import strategy
 
 # constraints and penalties
-import constraints
-import penalty
-import coupler
-import symbolic
+from . import constraints
+from . import penalty
+from . import coupler
+from . import symbolic
 
 # monitors, function wrappers, and other tools
-import monitors
-import munge
-import tools
+from . import monitors
+from . import munge
+from . import tools
 
 # scripts
-from scripts import model_plotter, log_reader, collapse_plotter
-import support
+from .scripts import model_plotter, log_reader, collapse_plotter
+from . import support
 
 # backward compatibility
-from tools import *
+from .tools import *
 
 
 def license():
     """print license"""
-    print __license__
+    print(__license__)
     return
 
 def citation():
     """print citation"""
-    print __doc__[-526:-123]
+    print(__doc__[-526:-123])
     return
 
 # end of file

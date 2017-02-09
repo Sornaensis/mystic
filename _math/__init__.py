@@ -34,15 +34,15 @@ These mathematical tools are provided::
 
 """
 # functions and tools
-from poly import polyeval, poly1d
-from grid import gridpts, samplepts
-from approx import almostEqual
+from .poly import polyeval, poly1d
+from .grid import gridpts, samplepts
+from .approx import almostEqual
 
 
 # backward compatibility
-from approx import approx_equal
-import discrete as dirac_measure
-import distance as paramtrans
+from .approx import approx_equal
+from . import discrete as dirac_measure
+from . import distance as paramtrans
 
 
 # distribution object

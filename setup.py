@@ -6,7 +6,7 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - http://trac.mystic.cacr.caltech.edu/project/mystic/browser/mystic/LICENSE
 
-from __future__ import with_statement
+
 import os
 import sys
 
@@ -361,12 +361,8 @@ setup(name='mystic',
 """ % (target_version, long_description)
 
 # add dependencies
-if sys.version_info[:2] < (2.6):
-    numpy_version = '>=1.0, <1.8.0'
-    sympy_version = '>=0.6.7'#, <0.7.1'
-else:
-    numpy_version = '>=1.0'
-    sympy_version = '>=0.6.7'#, <0.7.4'
+numpy_version = '>=1.0'
+sympy_version = '>=0.6.7'#, <0.7.4'
 dill_version = '>=0.2.6'
 klepto_version = '>=0.1.3'
 scipy_version = '>=0.6.0'
@@ -390,7 +386,7 @@ setup_code += """
 """
 
 # exec the 'setup' code
-exec setup_code
+exec(setup_code)
 
 # if dependencies are missing, print a warning
 try:
@@ -401,15 +397,15 @@ try:
     #import scipy
     #import matplotlib #XXX: has issues being zip_safe
 except ImportError:
-    print "\n***********************************************************"
-    print "WARNING: One of the following dependencies is unresolved:"
-    print "    numpy %s" % numpy_version
-    print "    sympy %s" % sympy_version
-    print "    klepto %s" % klepto_version
-    print "    dill %s" % dill_version
-    print "    scipy %s (optional)" % scipy_version
-    print "    matplotlib %s (optional)" % matplotlib_version
-    print "***********************************************************\n"
+    print("\n***********************************************************")
+    print("WARNING: One of the following dependencies is unresolved:")
+    print("    numpy %s" % numpy_version)
+    print("    sympy %s" % sympy_version)
+    print("    klepto %s" % klepto_version)
+    print("    dill %s" % dill_version)
+    print("    scipy %s (optional)" % scipy_version)
+    print("    matplotlib %s (optional)" % matplotlib_version)
+    print("***********************************************************\n")
 
 
 if __name__=='__main__':

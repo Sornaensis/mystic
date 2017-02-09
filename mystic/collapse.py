@@ -118,7 +118,7 @@ def collapse_weight(stepmon, tolerance=0.005, generations=50, mask=None):
                 msg = "bad element '%s' in mask" % str(i)
                 raise ValueError(msg)
     elif type(mask) is dict:
-        for (i,j) in mask.iteritems():
+        for (i,j) in mask.items():
             if type(j) is not set or type(i) is not int:
                 msg = "bad entry '%s:%s' in mask" % (str(i),str(j))
                 raise ValueError(msg)
@@ -178,7 +178,7 @@ def collapse_position(stepmon, tolerance=0.005, generations=50, mask=None):
                 msg = "bad element '%s' in mask" % str(i)
                 raise ValueError(msg)
     elif type(mask) is dict:
-        for (i,j) in mask.iteritems():
+        for (i,j) in mask.items():
             if type(j) is not set or type(i) is not int:
                 msg = "bad entry '%s:%s' in mask" % (str(i),str(j))
                 raise ValueError(msg)
@@ -227,7 +227,7 @@ def collapse_position(stepmon, tolerance=0.005, generations=50, mask=None):
         import itertools as it
         # tuple of where,pairs
         measures,mask = (),()
-        for (i,j) in (zip(*((j[0],i) for i in j[1])) for j in distances):
+        for (i,j) in (list(zip(*((j[0],i) for i in j[1]))) for j in distances):
             measures += i
             mask += j
         mask = (measures,mask) if len(measures) else ()
@@ -272,7 +272,7 @@ def _weight_filter(mask):
         selector = lambda x: x - mask
     elif type(mask) is dict:
         pairs = False
-        selector = lambda x: dict((k,v) for (k,v) in ((i,j - mask.get(i,set())) for (i,j) in x.iteritems()) if v)
+        selector = lambda x: dict((k,v) for (k,v) in ((i,j - mask.get(i,set())) for (i,j) in x.items()) if v)
     else:
         import itertools as it
         pairs = None #XXX: special case, use where notation
@@ -296,7 +296,7 @@ def _position_filter(mask):
     elif type(mask) is dict:
         pairs = False
         from mystic.tools import _symmetric
-        selector = lambda x: dict((k,v) for (k,v) in ((i,j - _symmetric(mask.get(i,set()))) for (i,j) in x.iteritems()) if v)
+        selector = lambda x: dict((k,v) for (k,v) in ((i,j - _symmetric(mask.get(i,set()))) for (i,j) in x.items()) if v)
     else:
         import itertools as it
         from mystic.tools import _inverted

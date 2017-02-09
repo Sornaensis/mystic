@@ -67,7 +67,7 @@ Inputs:
     random = random_state().random
     def factors(n):
         result = list()
-        for i in chain([2],xrange(3,n+1,2)):
+        for i in chain([2],range(3,n+1,2)):
             s = 0
             while n%i == 0:
                 n /= i
@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
   # build a grid of starting points
   initial_values = gridpts(bins)
-  print "grid: %s" % initial_values
+  print("grid: %s" % initial_values)
 
   npts = 10
   lower = [0.0, 3.0, 6.0]
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
   # generate a set of random starting points
   initial_values = samplepts(lower,upper,npts)
-  print "scatter: %s" % initial_values
+  print("scatter: %s" % initial_values)
 
 
 # EOF

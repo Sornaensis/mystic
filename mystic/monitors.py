@@ -69,6 +69,7 @@ import sys
 import numpy
 from mystic.tools import list_or_tuple_or_ndarray
 from mystic.tools import listify, multiply, divide, _kdiv
+from functools import reduce
 
 class Null(object):
     """A Null object
@@ -86,7 +87,7 @@ Null objects always and reliably "do nothing." """
     def __init__(self, *args, **kwargs): pass
     def __call__(self, *args, **kwargs): return self
     def __repr__(self): return "Null()"
-    def __nonzero__(self): return False
+    def __bool__(self): return False
     def __getattr__(self, name): return self
     def __setattr__(self, name, value): return self
     def __delattr__(self, name): return self
@@ -150,7 +151,7 @@ example usage...
             monitor.__module__ in ['mystic._genSow']: # CustomMonitor()
                 pass #XXX: CustomMonitor may fail...
         else:
-            raise TypeError, "'%s' is not a monitor instance" % monitor
+            raise TypeError("'%s' is not a monitor instance" % monitor)
         self._x.extend(monitor._x)
         self._y.extend(self._get_y(monitor))      # scalar, up to 2x faster
        #self._y.extend(self._k(monitor.iy, iter)) # vector, results like numpy
@@ -167,7 +168,7 @@ example usage...
             monitor.__module__ in ['mystic._genSow']: # CustomMonitor()
                 pass #XXX: CustomMonitor may fail...
         else:
-            raise TypeError, "'%s' is not a monitor instance" % monitor
+            raise TypeError("'%s' is not a monitor instance" % monitor)
         [self._x.insert(*i) for i in enumerate(monitor._x)]
         [self._y.insert(*i) for i in enumerate(self._get_y(monitor))]
        #[self._y.insert(*i) for i in enumerate(self._k(monitor.iy, iter))]
@@ -194,7 +195,7 @@ example usage...
         if self._npts is None: return self._npts
         for (i,n) in enumerate(self._npts):
             indx = 2*reduce(lambda x,y:x+y, (0,)+self._npts[:i])
-            wts.extend(range(indx,n+indx))
+            wts.extend(list(range(indx,n+indx)))
         return wts
 
     def get_ipos(self):
@@ -202,7 +203,7 @@ example usage...
         if self._npts is None: return self._npts
         for (i,n) in enumerate(self._npts):
             indx = 2*reduce(lambda x,y:x+y, (0,)+self._npts[:i])
-            pos.extend(range(indx+self._npts[0],n+indx+self._npts[0])) 
+            pos.extend(list(range(indx+self._npts[0],n+indx+self._npts[0]))) 
         return pos
 
     def get_wts(self):
@@ -282,7 +283,7 @@ current parameters every 'xinterval'.
         return
     def info(self, message):
         super(VerboseMonitor,self).info(message)
-        print "%s" % "".join(["",str(message)])
+        print("%s" % "".join(["",str(message)]))
         return
     def __call__(self, x, y, id=None, best=0, k=False):
         super(VerboseMonitor,self).__call__(x, y, id, k=k)
@@ -299,7 +300,7 @@ current parameters every 'xinterval'.
                 y = " %f" % self._ik(self._y[-1][best], k)
             msg = "Generation %d has%s Chi-Squared:%s" % (self._step-1,who,y)
             if id is not None: msg = "[id: %d] " % (id) + msg
-            print msg
+            print(msg)
         if self._xinterval is not numpy.inf and \
            int((self._step-1) % self._xinterval) == 0:
             if not list_or_tuple_or_ndarray(x):
@@ -313,7 +314,7 @@ current parameters every 'xinterval'.
                 x = "\n %s" % self._x[-1][best]
             msg = "Generation %d has%s fit parameters:%s" % (self._step-1,who,x)
             if id is not None: msg = "[id: %d] " % (id) + msg
-            print msg
+            print(msg)
         return
     pass
 
@@ -403,7 +404,7 @@ Logs ChiSq and parameters to a file every 'interval', print every 'yinterval'
         return
     def info(self, message):
         super(VerboseLoggingMonitor,self).info(message)
-        print "%s" % "".join(["",str(message)])
+        print("%s" % "".join(["",str(message)]))
         return
     def __call__(self, x, y, id=None, best=0, k=False):
         super(VerboseLoggingMonitor,self).__call__(x, y, id, best, k=k)
@@ -420,7 +421,7 @@ Logs ChiSq and parameters to a file every 'interval', print every 'yinterval'
                 y = " %f" % self._ik(self._y[-1][best], k)
             msg = "Generation %d has%s Chi-Squared:%s" % (self._step-1,who,y)
             if id is not None: msg = "[id: %d] " % (id) + msg
-            print msg
+            print(msg)
         if self._vxinterval is not numpy.inf and \
            int((self._step-1) % self._vxinterval) == 0:
             if not list_or_tuple_or_ndarray(x):
@@ -434,7 +435,7 @@ Logs ChiSq and parameters to a file every 'interval', print every 'yinterval'
                 x = "\n %s" % self._x[-1][best]
             msg = "Generation %d has%s fit parameters:%s" % (self._step-1,who,x)
             if id is not None: msg = "[id: %d] " % (id) + msg
-            print msg
+            print(msg)
         return
     def __reduce__(self):
         interval = self._yinterval
@@ -474,7 +475,7 @@ example usage...
     >>> sow.d
     []
     """
-    from _genSow import genSow
+    from ._genSow import genSow
     return genSow(**kwds)(*args)
 
 
@@ -497,7 +498,7 @@ sys.modules.pop('{base}', None);
         _globals = {}
         _globals.update(globals())
         code = compile(string, '<string>', 'exec')
-        exec code in _globals
+        exec(code, _globals)
         npts = _globals.get('___npts')
         params = _globals.get('___params')
         cost = _globals.get('___cost')

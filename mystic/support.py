@@ -66,7 +66,7 @@ def _cone_builder(slope, bounds, strict=True):
     Z = np.array(tmp) 
     return X,Z,Y
 
-  lb,ub = zip(*bounds)
+  lb,ub = list(zip(*bounds))
   # if False, the cone surface may violate bounds
  #strict = True # always respect the bounds
 
@@ -110,7 +110,7 @@ def _plot_bowtie(ax, data, slope, bounds, color='0.75', axis=None, tol=0.0):
   axis -- the axis of the cone
   tol -- distance between center of mass of the double cones and a cone vertex
 """
-  if axis not in range(len(bounds)-1): return ax
+  if axis not in list(range(len(bounds)-1)): return ax
   from numpy import asarray, inf
   data = asarray(data)
   sl = slope[axis]
@@ -181,7 +181,7 @@ def _plot_data(ax, data, bounds, color='red', strict=True, **kwds):
 """
   _2D = kwds.get('_2D', False)
 # strict = True # always respect the bounds
-  lb,ub = zip(*bounds)
+  lb,ub = list(zip(*bounds))
   # plot the datapoints themselves
   from numpy import asarray
   for datapt in data:
@@ -206,7 +206,7 @@ def _clip_axes(ax, bounds):
   ax -- matplotlib 'Axes3D' plot object
   bounds -- list of tuples of bounds for the plot; (lower,upper) for each axis
 """
-  lb,ub = zip(*bounds)
+  lb,ub = list(zip(*bounds))
   # plot only within [lb,ub]
   ax.set_xlim3d(lb[0], ub[0])
   ax.set_ylim3d(lb[1], ub[1])
@@ -238,7 +238,7 @@ def _get_slope(data, replace=None, mask=None):
   slope = data.lipschitz
   if mask in range(len(slope)):
     slope = swap(slope, mask)
-  if replace not in range(len(slope)):  # don't replace an axis
+  if replace not in list(range(len(slope))):  # don't replace an axis
     return slope
   return slope[:replace] + [1.0] + slope[replace+1:]
 
@@ -255,7 +255,7 @@ def _get_coords(data, replace=None, mask=None):
   values = data.values
   if mask in range(len(slope)):
     coords = [swap(pt,mask) for pt in coords]
-  if replace not in range(len(slope)):  # don't replace an axis
+  if replace not in list(range(len(slope))):  # don't replace an axis
     return coords
   return [list(coords[i][:replace]) + [values[i]] + \
           list(coords[i][replace+1:]) for i in range(len(coords))]
@@ -267,7 +267,7 @@ def swap(alist, index=None):
   alist -- a list of objects
   index -- the selected element
   """
-  if index not in range(len(alist)):  # don't swap an element
+  if index not in list(range(len(alist))):  # don't swap an element
     return alist 
   return alist[:index] + alist[index+1:] + alist[index:index+1]
 
@@ -306,7 +306,7 @@ Required Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(filename, (list,tuple)) and not kwds:
         cmdargs = filename # (above is used by script to parse command line)
-    elif isinstance(filename, basestring) and not kwds:
+    elif isinstance(filename, str) and not kwds:
         cmdargs = shlex.split(filename)
     # 'everything else' is essentially the functional interface
     else:
@@ -331,7 +331,7 @@ Required Inputs:
             cmdargs += '' if legend == False else '--legend '
         else:
             cmdargs = ' ' + cmdargs
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             cmdargs = filename.split() + shlex.split(cmdargs)
         else: # special case of passing in monitor instance
             instance = filename
@@ -367,7 +367,7 @@ Required Inputs:
     parser.add_option("-g","--legend",action="store_true",dest="legend",\
                       default=False,help="show the legend")
 
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -466,7 +466,7 @@ Required Inputs:
         code = "ax%d = fig.add_subplot(dim1,dim2,%d, sharex=ax1);" % (i,i)
         code += "ax%d.set_ylabel(label[%d]);" % (i,i-1)
         code = compile(code, '<string>', 'exec')
-        exec code in globals
+        exec(code, globals)
         data = eval("params[%s]" % select[i-1])
         try:
             n = int(select[i-1].split(":")[0])
@@ -476,7 +476,7 @@ Required Inputs:
             globals['line'] = line
             code = "ax%d.plot(line,label='%s')#, marker='o')" % (i,n)
             code = compile(code, '<string>', 'exec')
-            exec code in globals
+            exec(code, globals)
             n += 1
         if legend: plt.legend()
     if cost:
@@ -485,7 +485,7 @@ Required Inputs:
         code += "cx1.plot(cost,label='cost');"#, marker='o')"
         if max(0, len(label) - plots): code += "cx1.set_ylabel(label[-1]);"
         code = compile(code, '<string>', 'exec')
-        exec code in globals
+        exec(code, globals)
         if legend: plt.legend()
 
     if not parsed_opts.out:
@@ -556,7 +556,7 @@ Required Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(filename, (list,tuple)) and not kwds:
         cmdargs = filename # (above is used by script to parse command line)
-    elif isinstance(filename, basestring) and not kwds:
+    elif isinstance(filename, str) and not kwds:
         cmdargs = shlex.split(filename)
     # 'everything else' is essentially the functional interface
     else:
@@ -583,7 +583,7 @@ Required Inputs:
             cmdargs += '' if flat == False else '--flat '
         else:
             cmdargs = ' ' + cmdargs
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             cmdargs = filename.split() + shlex.split(cmdargs)
         else: # special case of passing in monitor instance
             instance = filename
@@ -624,7 +624,7 @@ Required Inputs:
     parser.add_option("-f","--flat",action="store_true",dest="flatten",\
                       default=False,help="show selected iterations in a single plot")
 
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -746,7 +746,7 @@ Required Inputs:
     else: 
         code = "plt.title('iterations[*]');"
     code = compile(code, '<string>', 'exec')
-    exec code in globals
+    exec(code, globals)
     ax1.set_xlabel(label[0])
     ax1.set_ylabel(label[1])
     ax1.set_zlabel(label[2])
@@ -763,7 +763,7 @@ Required Inputs:
             code += "ax.set_ylabel(label[1]);"
             code += "ax.set_zlabel(label[2]);"
             code = compile(code, '<string>', 'exec')
-            exec code in globals
+            exec(code, globals)
             a.append(globals['ax'])
 
     # turn each "n:m" in select to a list
@@ -853,7 +853,7 @@ Required Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(filename, (list,tuple)) and not kwds:
         cmdargs = filename # (above is used by script to parse command line)
-    elif isinstance(filename, basestring) and not kwds:
+    elif isinstance(filename, str) and not kwds:
         cmdargs = shlex.split(filename)
     # 'everything else' is essentially the functional interface
     else:
@@ -882,7 +882,7 @@ Required Inputs:
             cmdargs += '' if flat == False else '--flat '
         else:
             cmdargs = ' ' + cmdargs
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             cmdargs = filename.split() + shlex.split(cmdargs)
         else: # special case of passing in monitor instance
             instance = filename
@@ -926,7 +926,7 @@ Required Inputs:
     parser.add_option("-f","--flat",action="store_true",dest="flatten",\
                       default=False,help="show selected iterations in a single plot")
 
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -1058,7 +1058,7 @@ Required Inputs:
     else: 
         code = "plt.title('iterations[*]');"
     code = compile(code, '<string>', 'exec')
-    exec code in globals
+    exec(code, globals)
     ax1.set_xlabel(label[0])
     ax1.set_ylabel(label[1])
     ax1.set_zlabel(label[2])
@@ -1075,7 +1075,7 @@ Required Inputs:
             code += "ax.set_ylabel(label[1]);"
             code += "ax.set_zlabel(label[2]);"
             code = compile(code, '<string>', 'exec')
-            exec code in globals
+            exec(code, globals)
             a.append(globals['ax'])
 
     # turn each "n:m" in select to a list
@@ -1183,7 +1183,7 @@ Additional Inputs:
     # handle the special case where list is provided by sys.argv
     if isinstance(filename, (list,tuple)) and not kwds:
         cmdargs = filename # (above is used by script to parse command line)
-    elif isinstance(filename, basestring) and not kwds:
+    elif isinstance(filename, str) and not kwds:
         cmdargs = shlex.split(filename)
     # 'everything else' is essentially the functional interface
     else:
@@ -1222,7 +1222,7 @@ Additional Inputs:
             cmdargs += '' if flat == False else '--flat '
         else:
             cmdargs = ' ' + cmdargs
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             cmdargs = filename.split() + shlex.split(cmdargs)
         else: # special case of passing in monitor instance
             instance = filename
@@ -1278,7 +1278,7 @@ Additional Inputs:
     parser.add_option("-f","--flat",action="store_true",dest="flatten",\
                       default=False,help="show selected iterations in a single plot")
 
-    from StringIO import StringIO
+    from io import StringIO
     f = StringIO()
     parser.print_help(file=f)
     f.seek(0)
@@ -1495,7 +1495,7 @@ Additional Inputs:
     else: 
         code = "plt.title('iterations[*]');"
     code = compile(code, '<string>', 'exec')
-    exec code in globals
+    exec(code, globals)
     if cones and data and xs in range(len(bounds)):
         if _2D:
             _plot_bowtie(ax1,coords,slope,bounds,axis=axis,tol=gap)
@@ -1520,7 +1520,7 @@ Additional Inputs:
                 code += "ax.plot([bounds[0][1]],[bounds[1][1]],[bounds[2][1]]);"
             code += "plt.title('iterations[%s]');" % select[i - 1]
             code = compile(code, '<string>', 'exec')
-            exec code in globals
+            exec(code, globals)
             ax = globals['ax']
             if cones and data and xs in range(len(bounds)):
                 if _2D:

@@ -526,7 +526,7 @@ The function's input will be mapped to the given discrete set
         if not len(shape(x)):
             flatten = True
             x = [x]
-        result = tuple(i for i in asarray(map(_argnear, x)).T)
+        result = tuple(i for i in asarray(list(map(_argnear, x))).T)
         if flatten:
             result = tuple(asarray(i[0]) for i in result)
         return result
@@ -540,7 +540,7 @@ The function's input will be mapped to the given discrete set
         _x.flat = [i for i in x]
         _l.flat = [i for i in l]
         _h.flat = [i for i in h]
-        result = asarray(map(_near, x, l, h))
+        result = asarray(list(map(_near, x, l, h)))
         if not has_iterable:
             result = asarray(result[0])
         return result
@@ -804,7 +804,7 @@ For example,
     [-2, -2, -2, -3]
     """
     offset = lambda i: (i if isinstance(i, int) else (i[0], lambda x:(x+i[1])))
-    return synchronized(dict((i,offset(j)) for (i,j) in mask.iteritems()))
+    return synchronized(dict((i,offset(j)) for (i,j) in mask.items()))
 
 
 def impose_as(mask, offset=None):
@@ -846,13 +846,13 @@ For example,
     def dec(f):
         def func(x, *args, **kwds):
             x = copy.copy(x) #XXX: inefficient
-            for i,j in connected(mask).iteritems():
+            for i,j in connected(mask).items():
                 for k in j:
                     try: x[k] = x[i]
                     except IndexError: pass
             pairs = list(mask) #XXX: inefficient
             while pairs: # deal with the offset
-                indx,trac = zip(*pairs)
+                indx,trac = list(zip(*pairs))
                 trac = set(trac)
                 for i in trac:
                     try: x[i] += offset
@@ -997,11 +997,11 @@ For example,
             c.load(x, npts)
             # apply all collapses
             for clps in tracking:
-                for k,v in clps.iteritems():
+                for k,v in clps.items():
                     c[k].positions, c[k].weights = \
                       impose_collapse(v, c[k].positions, c[k].weights)
             for clps in noweight:
-                for k,v in clps.iteritems():
+                for k,v in clps.items():
                     c[k].positions, c[k].weights = \
                       impose_unweighted(v, c[k].positions, c[k].weights, False)
             # convert to params and apply function

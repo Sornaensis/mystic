@@ -11,15 +11,16 @@
 # refactored by Mike McKerns, 2012
 """Tools for working with symbolic constraints.
 """
-from __future__ import division
+
 
 __all__ = ['linear_symbolic','replace_variables','get_variables',
            'solve','simplify','comparator',
            'penalty_parser','constraints_parser','generate_conditions',
            'generate_solvers','generate_penalty','generate_constraint']
 
+from functools import cmp_to_key
 from numpy import ndarray, asarray
-from _symbolic import solve
+from ._symbolic import solve
 from mystic.tools import list_or_tuple_or_ndarray, flatten
 
 import sys
@@ -164,7 +165,7 @@ Further Inputs:
     code += """from numpy import ptp as spread;"""   # look like mystic.math
     code += """_sqrt = lambda x:x**.5;""" # 'domain error' to 'negative power'
     code = compile(code, '<string>', 'exec')
-    exec code in _locals
+    exec(code, _locals)
 
     def _flip(cmp):
         "flip the comparator (i.e. '<' to '>', and '<=' to '>=')"
@@ -178,15 +179,15 @@ Further Inputs:
         cmp = comparator(eqn)
         res = solve(eqn.replace(cmp,'='), target=target, **kwds)
         _eqn = res.replace('=',cmp)
-        if verbose: print 'in: %s\nout: %s' % (eqn, _eqn)
+        if verbose: print('in: %s\nout: %s' % (eqn, _eqn))
         if not cmp.count('<')+cmp.count('>'):
             return _eqn 
         # evaluate expression to see if comparator needs to be flipped
         locals = kwds['locals'] if 'locals' in kwds else None
-        if verbose: print get_variables(eqn, vars)
+        if verbose: print(get_variables(eqn, vars))
         if locals is None: locals = {}
         locals.update(dict((var,1.0+rand()/10000) for var in get_variables(eqn, vars)))
-        if verbose: print locals
+        if verbose: print(locals)
         locals_ = _locals.copy()
         locals_.update(locals) #XXX: allow this?
         # make sure '=' is '==' so works in eval
@@ -202,19 +203,19 @@ Further Inputs:
                 after, before = eval(after, locals_), eval(before, locals_)
                 break
             except OverflowError as error:
-                [locals_.update({k:v/100}) for k,v in locals_.items() if k in get_variables(_eqn, vars)]
+                [locals_.update({k:v/100}) for k,v in list(locals_.items()) if k in get_variables(_eqn, vars)]
             except ValueError as error:  #FIXME: python2.5
                 if error.message.startswith('negative number') and \
                    error.message.endswith('raised to a fractional power'):
                     val = variants.pop()
-                    [locals_.update({k:v+val}) for k,v in locals_.items() if k in get_variables(_eqn, vars)]
+                    [locals_.update({k:v+val}) for k,v in list(locals_.items()) if k in get_variables(_eqn, vars)]
                 else:
                     raise error
         else: #END HACK
             after, before = eval(after, locals_), eval(before, locals_)
-        if verbose: print "Before: ", before
-        if verbose: print "After: ", after
-        if verbose: print "Comparator: ", cmp
+        if verbose: print("Before: ", before)
+        if verbose: print("After: ", after)
+        if verbose: print("Comparator: ", cmp)
         if before == after:
             return _eqn
         # flip comparator, then return
@@ -236,7 +237,7 @@ Further Inputs:
                 used.append(res.split(comparator(res),1)[0].strip())
                 break
             except ValueError:
-                if isinstance(vars, basestring): vars = []
+                if isinstance(vars, str): vars = []
                 else: vars.pop(0)
         else: # failure... so re-raise error
             res = _simplify(eqn, variables=variables, target=target, **kwds)
@@ -293,7 +294,7 @@ Additional Inputs:
     variablescopy = variables[:]
     def comparator(x, y):
         return len(y) - len(x)
-    variablescopy.sort(comparator)
+    variablescopy.sort(key=cmp_to_key(comparator))
 
     # Figure out which index goes with which variable.
     indices = []
@@ -443,7 +444,7 @@ Additional Inputs:
                 split = constraint.split('=')
                 direction = '='
             if len(split) == 1:
-                print "Invalid constraint: ", constraint
+                print("Invalid constraint: ", constraint)
             eqn = {'lhs':split[0].rstrip('=').strip(), \
                    'rhs':split[-1].lstrip('=').strip()}
             expression = '%(lhs)s - (%(rhs)s)' % eqn
@@ -530,7 +531,7 @@ Additional Inputs:
                 split = constraint.split('=')
                 expression = '%(lhs)s = %(rhs)s'
             if len(split) == 1: # didn't contain '>', '<', or '='
-                print "Invalid constraint: ", constraint
+                print("Invalid constraint: ", constraint)
             eqn = {'lhs':split[0].rstrip('=').strip(), \
                    'rhs':split[-1].lstrip('=').strip()}
             expression = expression % eqn
@@ -601,7 +602,7 @@ Additional Inputs:
     code += """from numpy import mean as average;""" # use np.mean not average
    #code += """from mystic.math.measures import spread, variance, mean;"""
     code = compile(code, '<string>', 'exec')
-    exec code in globals
+    exec(code, globals)
     if locals is None: locals = {}
     globals.update(locals) #XXX: allow this?
     
@@ -623,7 +624,7 @@ def %(container)s_%(name)s(x): return eval('%(equation)s')
 %(container)s.append(%(container)s_%(name)s)
 del %(container)s_%(name)s""" % fdict
         code = compile(code, '<string>', 'exec')
-        exec code in globals, results
+        exec(code, globals, results)
 
     #XXX: what's best form to return?  will couple these with ptypes
     return tuple(results['inequality']), tuple(results['equality'])
@@ -676,7 +677,7 @@ Additional Inputs:
     code += """from mystic.math.measures import impose_sum, impose_product;"""
     code += """from mystic.math.measures import impose_variance;"""
     code = compile(code, '<string>', 'exec')
-    exec code in globals
+    exec(code, globals)
     if locals is None: locals = {}
     globals.update(locals) #XXX: allow this?
     
@@ -699,7 +700,7 @@ def %(container)s_%(name)s(x):
 %(container)s.append(%(container)s_%(name)s)
 del %(container)s_%(name)s""" % fdict
         code = compile(code, '<string>', 'exec')
-        exec code in globals, results
+        exec(code, globals, results)
 
     #XXX: what's best form to return?  will couple these with ctypes ?
     return tuple(results['solver'])

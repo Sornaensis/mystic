@@ -78,12 +78,12 @@ def sequential_deal(inarray, n):
     N = len(cards)
     # this bit of numpy will give, for N=20, n = 5
     # ord = [ [0,5,10,15], [1,6,11,16], [2,7,12,17], [3,8,13,18], [4,9,14,19] ]
-    ord = numpy.transpose(numpy.array(range(N)).reshape(N/n, n))
+    ord = numpy.transpose(numpy.array(list(range(N))).reshape(N/n, n))
     return [cards[x] for x in ord] 
 
 def sort_and_deal(cards, target, nplayers):
     import numpy
-    c = numpy.array(map(target, cards))
+    c = numpy.array(list(map(target, cards)))
     o = list(reversed(numpy.argsort(c)))
     # from best to worst
     sorted_deck = cards[o]
@@ -112,7 +112,7 @@ def sort_complex(c, a):
     # this is dumb, because c (i.e., a, are almost sorted)
     # should use the one below instead.
     import numpy
-    D = zip(a,c)
+    D = list(zip(a,c))
     def mycmp(x,y):
         if x[0] < y[0]:
             return 1

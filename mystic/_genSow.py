@@ -23,7 +23,7 @@ Takes **kwds of the form property="doc".
         self.__argslist = []
         self.__methlist = []
         self.__proplist = []
-        for key,value in self.__dict.items():
+        for key,value in list(self.__dict.items()):
             self.__initlist.append('self._%s = []' % key)
             self.__calllist.append('self._%s.append(kwds["%s"])' % (key,key))
             self.__argslist.append('self._%s.append(%s)' % (key,key))

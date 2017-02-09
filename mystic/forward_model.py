@@ -108,7 +108,7 @@ Example:
                 name = 'model'+str(i)
                 if name not in self._names: break
         elif name in self._names:
-            print "Model [%s] already in database." % name
+            print("Model [%s] already in database." % name)
             raise AssertionError
         self._names.append(name)
         self._forwardFactories.append(model)

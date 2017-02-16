@@ -186,7 +186,7 @@ Further Inputs:
         locals = kwds['locals'] if 'locals' in kwds else None
         if verbose: print(get_variables(eqn, vars))
         if locals is None: locals = {}
-        locals.update(dict((var,1.0+rand()/10000) for var in get_variables(eqn, vars)))
+        locals.update(dict((var,100.0+rand()/10000) for var in get_variables(eqn, vars)))
         if verbose: print(locals)
         locals_ = _locals.copy()
         locals_.update(locals) #XXX: allow this?

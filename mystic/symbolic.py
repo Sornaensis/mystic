@@ -112,7 +112,7 @@ def comparator(equation):
            '!=' if equation.count('!=') else \
            '==' if equation.count('==') else '=' if equation.count('=') else ''
 
-def simplify(constraints, variables='x', target=None, **kwds):
+def simplify(constraints, variables='x', target=None, rational=True, **kwds):
     """simplify a system of symbolic constraints equations.
 
 Returns a system of equations where a single variable has been isolated on
@@ -155,6 +155,7 @@ Further Inputs:
         If cycle is True, there should be more variety on the left-hand side
         of the simplified equations. By default, the variables do not cycle.
 """
+    kwds.setdefault("rational", rational)
     import random
     _locals = {}
     # default is _locals with numpy and math imported

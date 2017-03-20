@@ -108,8 +108,6 @@ def solve_ingrid(lhs,rel,eqn,variables,target,rational=False):
     from sympy.core.symbol import var
     from sympy.parsing.sympy_parser import parse_expr
 
-    print (lhs,rel,eqn,variables,target)
-
     var(",".join(variables))
     var(lhs)
     expr = parse_expr(eqn)

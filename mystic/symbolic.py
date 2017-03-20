@@ -22,6 +22,7 @@ from functools import cmp_to_key
 from numpy import ndarray, asarray
 from ._symbolic import solve
 from mystic.tools import list_or_tuple_or_ndarray, flatten
+from mpmath import *
 
 import sys
 
@@ -101,6 +102,33 @@ Inputs:
             ineqstring += Gsum.rstrip(' + ') + ' <= ' + str(h[i]) + '\n'
     totalconstraints = ineqstring + eqstring
     return totalconstraints 
+
+def solve_ingrid(lhs,rel,eqn,variables,target,rational=False):
+    from sympy import exp,ln,solve,I
+    from sympy.core.symbol import var
+    from sympy.parsing.sympy_parser import parse_expr
+
+    print (lhs,rel,eqn,variables,target)
+
+    var(",".join(variables))
+    var(lhs)
+    expr = parse_expr(eqn)
+    lhssym = parse_expr(lhs)
+    targetsym = parse_expr(target)
+
+    res = []
+    try:
+        res = [i for i in solve(expr - lhssym, targetsym, rational=rational) if not i.has(I)]
+    except:
+        try:
+            res = [i for i in solve(expr - lhssym, targetsym, rational=not rational) if not i.has(I)]
+        except:
+            pass
+    
+    if len(res) > 0:
+        return target + rel + str(res[-1])
+
+    return "null"
 
 
 def comparator(equation):
